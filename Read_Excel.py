@@ -53,7 +53,3 @@ print(grab_Info(Dec,0,15)) #Success Example
 
 print(grab_Short()) # Returns all ShortNums with length 5
 print(grab_Long()) # Returns all LongNums with length 7
-
-
-
-
