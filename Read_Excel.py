@@ -9,7 +9,3 @@ Dec = list(XL['Dec'])
 ShortNum = 5
 LongNum = 7
 #
-
-def isShort_Long(request):
-    if Char[request]:
-        pass
