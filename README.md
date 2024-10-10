@@ -7,11 +7,11 @@
 // Current Python Tasks:
 
 
-Read_Excel: Vinny
+Read_Excel: Jae
 
 Encode: Tanner
 
-Decode: Jae
+Decode: Vinny
 
 Same: Ashley
 
