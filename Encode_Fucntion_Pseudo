@@ -1,0 +1,68 @@
+# Encode Function
+# Encode function translates a text file of characters
+# into a text file of binary code containing the number
+# of bits required to translate and the binary sequence.
+
+def encode(fn, excel):
+    char = list(excel['Char'])   # grabs characters,
+    binary = list(excel['Bin'])  # binary, and dec
+    dec = list(excel['Dec'])     # from Excel file
+
+    key = dict(zip(char, binary))      # turns characters
+    # zip function makes a dictionary  # into keys and
+    # with two lists                   # binary into values
+
+    binary_file = ""  # creating binary string
+    for ind, file_char in enumerate(fn):  # loop over file
+        # testing for word "the" and "The"
+        if file_char == "t" or file_char == "T":
+            if fn[ind + 1] == "h" and fn[ind + 2] == "e":
+                if fn[ind + 3] == " ":
+                    if file_char == "t":
+                        binary_file += str(key["the "])
+                        ind = ind + 4
+                        file_char = fn[ind]
+                        # resets index and current character
+                    elif file_char == "T":
+                        binary_file += str(key["The "])
+                        ind = ind + 4
+                        file_char = fn[ind]
+                        # resets index and current character
+
+        # testing for word "and"
+        elif file_char == "a":
+            if fn[ind + 1] == "n" and fn[ind + 2] == "d":
+                if fn[ind + 3] == " ":
+                    binary_file += str(key["and "])
+                    ind = ind + 4
+                    file_char = fn[ind]
+
+        # testing for "st" or "so"
+        elif file_char == "s":
+            if fn[ind + 1] == "o":
+                binary_file += str(key["so"])
+                ind = ind + 2
+                file_char = fn[ind]
+            # resets index and current character
+
+            elif fn[ind + 1] == "t":
+                binary_file += str(key["st"])
+                ind = ind + 2
+                file_char = fn[ind]
+            # resets index and current character
+
+        # testing for these words first because if I didn't
+        # it would just add one singular character
+
+        # if the character isn't a prepared word in excel,
+        # then the process of translation is normal
+
+        else:
+            binary_file += str(key[file_char])
+            # takes the character and finds it within our
+            # dictionary, then adds the corresponding binary
+            # to the binary file
+
+    bin_output = str(len(binary_file)) + "." + binary_file
+    # this creates the file sequence of D.B
+    return bin_output # returns the new binary file
