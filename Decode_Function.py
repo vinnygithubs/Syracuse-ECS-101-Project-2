@@ -1,14 +1,19 @@
 # // ECS M012, Group 5 Decode File Function
+from importlib.resources import contents
 from operator import truediv
 import pandas as pd
+#
 XL = pd.read_excel('P2M012_G5.xlsx', dtype=str)
 Char = list(XL['Char'])
 Bin = list(XL['Bin'])
-Dec = list(XL['Dec'])
+#
 shortnum=5
 longnum=7
+sample=10010010000000101011001100011110101011011001101111
 #
-oldfile = '1001001000000010101100'  # THE FILE IN BINARY ('na T') (THIS IS JUST A TEST)
+with open('samplefile.txt', 'r') as fileopen:
+    oldfile = fileopen.read()
+    print("Encoded:", oldfile)
 
 
 def decode_Start(info:str):
@@ -29,6 +34,8 @@ def decode_Start(info:str):
                     newfile+=' '
                 elif the_char == '<apostraphe>':
                     newfile+="'"
+                elif the_char == "<newline>":
+                    newfile+="\n"
                 else:
                     newfile += the_char # add char
                 currentspot += shortnum  # Increase currspot for next loop
@@ -45,6 +52,8 @@ def decode_Start(info:str):
                     newfile += ' '
                 elif the_char == '<apostraphe>':
                     newfile += "'"
+                elif the_char == "<newline>":
+                    newfile += "\n"
                 else:
                     newfile += the_char
                 currentspot += longnum
@@ -52,4 +61,7 @@ def decode_Start(info:str):
 
     return newfile
 
-print(decode_Start(oldfile))
+new_content = decode_Start(oldfile)
+with open('samplefile.txt', 'w') as fileopen:
+    fileopen.write(new_content)
+print("Decoded:", new_content)
