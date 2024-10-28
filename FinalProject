@@ -72,9 +72,14 @@ def encode(fn):
         fileopen.write(newfile)
     print("Encoded:", newfile)
 
-
-# // ECS M012, Group 5 Decode File Function
-
+# Vinny Gallagher
+# Decode function will loop through the file provided
+# in binary and loop through every char by tracking
+# the current spot. Make sure row isnt empty, then
+# add the char to the string 'newfile' and add one
+# to the currspot variable. repeat this for long and
+# short numbers. continue until currspot < len of the
+# file provided.
 
 def decode(fn="BinOutput.txt"):
     # WHILE THE FILE ISNT DECODED // LOOP
