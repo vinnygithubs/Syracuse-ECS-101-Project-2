@@ -6,13 +6,13 @@ Char = list(XL['Char'])
 Bin = list(XL['Bin'])
 Dec = list(XL['Dec'])
 
-for char in Char:
+for ind, char in enumerate(Char):
     if char == '<space>':
-        char = ' '
+        Char[ind] = ' '
     elif char == '<apostraphe>':
-        char = "'"
+        Char[ind] = "'"
     elif char == "<newline>":
-        newfile = "\n"
+        Char[ind] = "\n"
     else:
         continue
 
@@ -31,57 +31,38 @@ LongNum = 7
 # of bits required to translate and the binary sequence.
 
 def encode(fn):
-
     binary_file = ""  # creating binary string
     for ind, file_char in enumerate(fn):  # loop over file
-        # testing for word "the" and "The"
+        # Handle special cases first
+        if file_char == '\n':
+            binary_file += str(key.get("<newline>", ""))  # Use .get() to avoid KeyError
+            continue
+
+        # Testing for words
         if file_char == "t" or file_char == "T":
-            if fn[ind + 1] == "h" and fn[ind + 2] == "e":
-                if fn[ind + 3] == " ":
-                    if file_char == "t":
-                        binary_file += str(key["the "])
-                        ind = ind + 4
-                        file_char = fn[ind]
-                        # resets index and current character
-                    elif file_char == "T":
-                        binary_file += str(key["The "])
-                        ind = ind + 4
-                        file_char = fn[ind]
-                        # resets index and current character
-
-        # testing for word "and"
-        elif file_char == "a":
-            if fn[ind + 1] == "n" and fn[ind + 2] == "d":
-                if fn[ind + 3] == " ":
-                    binary_file += str(key["and "])
-                    ind = ind + 4
-                    file_char = fn[ind]
-
-        # testing for "st" or "so"
+            if fn[ind + 1:ind + 4] == "he ":
+                binary_file += str(key["the " if file_char == 't' else "The "])
+                ind += 3
+                continue
+        elif file_char == "a" and fn[ind + 1:ind + 3] == "nd ":
+            binary_file += str(key["and "])
+            ind += 3
+            continue
         elif file_char == "s":
             if fn[ind + 1] == "o":
                 binary_file += str(key["so"])
-                ind = ind + 2
-                file_char = fn[ind]
-            # resets index and current character
-
+                ind += 1
+                continue
             elif fn[ind + 1] == "t":
                 binary_file += str(key["st"])
-                ind = ind + 2
-                file_char = fn[ind]
-            # resets index and current character
+                ind += 1
+                continue
 
-        # testing for these words first because if I didn't
-        # it would just add one singular character
-
-        # if the character isn't a prepared word in excel,
-        # then the process of translation is normal
-
-        else:
+        # Regular character mapping
+        if file_char in key:
             binary_file += str(key[file_char])
-            # takes the character and finds it within our
-            # dictionary, then adds the corresponding binary
-            # to the binary file
+        else:
+            print(f"Warning: '{file_char}' not found in key.")
 
     newfile = str(len(binary_file)) + "." + binary_file
     # this creates the file sequence of D.B
@@ -182,3 +163,4 @@ def same(fn1, fn2 = "TextOutput.txt"):
         elif L2 > L1:
             errors.write(text2[m:])
         errors.close()
+
