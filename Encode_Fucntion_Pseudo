@@ -1,16 +1,18 @@
+# Tanner Moore
 # Encode Function
 # Encode function translates a text file of characters
 # into a text file of binary code containing the number
 # of bits required to translate and the binary sequence.
 
-def encode(fn, excel):
-    char = list(excel['Char'])   # grabs characters,
+char = list(excel['Char'])   # grabs characters,
     binary = list(excel['Bin'])  # binary, and dec
     dec = list(excel['Dec'])     # from Excel file
 
     key = dict(zip(char, binary))      # turns characters
     # zip function makes a dictionary  # into keys and
-    # with two lists                   # binary into values
+    # with two lists
+
+def encode(fn):
 
     binary_file = ""  # creating binary string
     for ind, file_char in enumerate(fn):  # loop over file
@@ -63,6 +65,6 @@ def encode(fn, excel):
             # dictionary, then adds the corresponding binary
             # to the binary file
 
-    bin_output = str(len(binary_file)) + "." + binary_file
+    BinOutput.txt = str(len(binary_file)) + "." + binary_file
     # this creates the file sequence of D.B
-    return bin_output # returns the new binary file
+    return BinOutput.txt # returns the new binary file
