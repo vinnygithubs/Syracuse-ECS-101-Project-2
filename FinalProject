@@ -1,0 +1,184 @@
+# Global Variables
+import pandas as pd
+XL = pd.read_excel('P2M012_G5.xlsx', dtype=str)
+# Columns
+Char = list(XL['Char'])
+Bin = list(XL['Bin'])
+Dec = list(XL['Dec'])
+
+for char in Char:
+    if char == '<space>':
+        char = ' '
+    elif char == '<apostraphe>':
+        char = "'"
+    elif char == "<newline>":
+        newfile = "\n"
+    else:
+        continue
+
+key = dict(zip(Char, Bin))      # turns characters
+    # zip function makes a dictionary  # into keys and
+    # with two lists
+#
+ShortNum = 5
+LongNum = 7
+#
+
+# Tanner Moore
+# Encode Function
+# Encode function translates a text file of characters
+# into a text file of binary code containing the number
+# of bits required to translate and the binary sequence.
+
+def encode(fn):
+
+    binary_file = ""  # creating binary string
+    for ind, file_char in enumerate(fn):  # loop over file
+        # testing for word "the" and "The"
+        if file_char == "t" or file_char == "T":
+            if fn[ind + 1] == "h" and fn[ind + 2] == "e":
+                if fn[ind + 3] == " ":
+                    if file_char == "t":
+                        binary_file += str(key["the "])
+                        ind = ind + 4
+                        file_char = fn[ind]
+                        # resets index and current character
+                    elif file_char == "T":
+                        binary_file += str(key["The "])
+                        ind = ind + 4
+                        file_char = fn[ind]
+                        # resets index and current character
+
+        # testing for word "and"
+        elif file_char == "a":
+            if fn[ind + 1] == "n" and fn[ind + 2] == "d":
+                if fn[ind + 3] == " ":
+                    binary_file += str(key["and "])
+                    ind = ind + 4
+                    file_char = fn[ind]
+
+        # testing for "st" or "so"
+        elif file_char == "s":
+            if fn[ind + 1] == "o":
+                binary_file += str(key["so"])
+                ind = ind + 2
+                file_char = fn[ind]
+            # resets index and current character
+
+            elif fn[ind + 1] == "t":
+                binary_file += str(key["st"])
+                ind = ind + 2
+                file_char = fn[ind]
+            # resets index and current character
+
+        # testing for these words first because if I didn't
+        # it would just add one singular character
+
+        # if the character isn't a prepared word in excel,
+        # then the process of translation is normal
+
+        else:
+            binary_file += str(key[file_char])
+            # takes the character and finds it within our
+            # dictionary, then adds the corresponding binary
+            # to the binary file
+
+    newfile = str(len(binary_file)) + "." + binary_file
+    # this creates the file sequence of D.B
+
+    BinOutput = open("BinOutput.txt")
+    with open('BinOutput.txt', 'w') as fileopen:
+        fileopen.write(newfile)
+    print("Encoded:", newfile)
+
+
+# // ECS M012, Group 5 Decode File Function
+
+
+def decode(fn="BinOutput.txt"):
+    # WHILE THE FILE ISNT DECODED // LOOP
+    currentspot = 0 # where we're at in the oldfile
+    newfile = '' # the newfile str
+
+    # LOOP THROUGH ALL NUMBERS BELOW
+    while currentspot < len(fn): # while the cursor/spot is less than the length possible (of info)
+        if fn[currentspot] == '0': # SHORT NUM
+            char_in_binary = fn[currentspot:currentspot + ShortNum] # start at curr spot up to 5 to get bin num
+            row_index = XL[XL['Bin'] == char_in_binary].index # get the row
+
+            if not row_index.empty:  # make sure row isnt empty
+                row = row_index[0]  # get the index of row (where it is )
+                the_char = XL.loc[row, 'Char']
+                if the_char == '<space>':
+                    newfile+=' '
+                elif the_char == '<apostraphe>':
+                    newfile+="'"
+                elif the_char == "<newline>":
+                    newfile+="\n"
+                else:
+                    newfile += the_char # add char
+                currentspot += ShortNum  # Increase currspot for next loop
+                continue
+
+        elif fn[currentspot] == '1': # LONG NUM
+            char_in_binary = fn[currentspot:currentspot + LongNum]
+            row_index = XL[XL['Bin'] == char_in_binary].index
+            # NO COMMENTS BECAUSE IT IS PRATICALLY THE SAME, BESIDE += longnum
+            if not row_index.empty:
+                row = row_index[0]
+                the_char = XL.loc[row, 'Char']
+                if the_char == '<space>':
+                    newfile += ' '
+                elif the_char == '<apostraphe>':
+                    newfile += "'"
+                elif the_char == "<newline>":
+                    newfile += "\n"
+                else:
+                    newfile += the_char
+                currentspot += LongNum
+                continue
+
+    TextOutput = open("TextOutput.txt")
+    with open('TextOutput.txt', 'w') as fileopen:
+        fileopen.write(newfile)
+    print("Decoded:", newfile)
+
+# Ashley Gottorff
+# The same function compares the two text files and
+# creates an errors file if the texts are different.
+def same(fn1, fn2 = "TextOutput.txt"):
+    f1 = open(fn1)
+    text1 = f1.read()
+    f1.close()
+    print(text1)
+# Reading in the content of text 2.
+    f2 = open(fn2)
+    text2 = f2.read()
+    f2.close()
+    print(text2)
+
+    if text1 == text2:
+        print("Identical Files")
+    else:
+        print("Different Files")
+        # Create errors file.
+        errors = open("Errors.txt", "w")
+        # Write the lengths of the input files to
+        # the errors file.
+        L1 = len(text1)
+        L2 = len(text2)
+        errors.write("file 1: %d and file 2: %d\n" %(L1, L2))
+        # Find the shortest length of the
+        # two text strings.
+        m = min(L1, L2)
+        # Loop through all the functions
+        # from 0 to the min length.
+        for i in range(m):
+           if text1[i] != text2[i]:
+            errors.write("%d: %s: %s\n" %(i, text1[i], text2[i]))
+        # Print extra characters to errors file.
+        if L1 > L2:
+            errors.write(text1[m:])
+        elif L2 > L1:
+            errors.write(text2[m:])
+        errors.close()
