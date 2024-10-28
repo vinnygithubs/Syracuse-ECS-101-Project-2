@@ -1,4 +1,7 @@
-Jae Nicasio
+# Jae Nicasio
+# This code will read the lists in the excel file (Char, Bin, and Dec), 
+# for different characters in the excel file like "space", 
+# "apostraphe", and "new line" it will replace it with its actual character. 
 # Global Variables
 import pandas as pd
 XL = pd.read_excel('P2M012_G5.xlsx', dtype=str)
