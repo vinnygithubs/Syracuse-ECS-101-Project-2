@@ -11,7 +11,7 @@ shortnum=5
 longnum=7
 # sample=10010010000000101011001100011110101011011001101111 < - IGNORE (TESTING)
 #
-with open('samplefile.txt', 'r') as fileopen:
+with open('BinOutput.txt', 'r') as fileopen:
     oldfile = fileopen.read()
     print("Encoded:", oldfile)
 
@@ -35,6 +35,9 @@ def decode_Start(info:str):
             row_index = XL[XL['Bin'] == char_in_binary].index # get the row
 
             if not row_index.empty:  # make sure row isnt empty
+                row = row_index[0]  # get the index of row (where it is )
+                the_char = XL.loc[row, 'Char']
+
                 newfile += the_char # add char
                 currentspot += shortnum  # Increase currspot for next loop
                 continue
@@ -44,6 +47,9 @@ def decode_Start(info:str):
             row_index = XL[XL['Bin'] == char_in_binary].index
             # NO COMMENTS BECAUSE IT IS PRATICALLY THE SAME, BESIDE += longnum
             if not row_index.empty:
+                row = row_index[0]
+                the_char = XL.loc[row, 'Char']
+
                 newfile += the_char
                 currentspot += longnum
                 continue
@@ -51,6 +57,6 @@ def decode_Start(info:str):
     return newfile
 
 new_content = decode_Start(oldfile)
-with open('samplefile.txt', 'w') as fileopen:
+with open('TextOutput.txt', 'w') as fileopen:
     fileopen.write(new_content)
 print("Decoded:", new_content)
