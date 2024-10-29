@@ -6,13 +6,17 @@ Char = list(XL['Char'])
 Bin = list(XL['Bin'])
 Dec = list(XL['Dec'])
 
+# Character replacements mapping
+replacements = {
+    '<space>': ' ',
+    '<apostraphe>': "'",
+    '\\n': "\n",
+}
+
+# Replace characters using the mapping
 for ind, char in enumerate(Char):
-    if char == '<space>':
-        Char[ind] = ' '
-    if char == '<apostraphe>':
-        Char[ind] = "'"
-    if char == "\\n":
-        Char[ind] = "\n"
+    if char in replacements:
+        Char[ind] = replacements[char]
 
 key = dict(zip(Char, Bin))      # turns characters
     # zip function makes a dictionary  # into keys and
@@ -29,17 +33,27 @@ LongNum = 7
 # of bits required to translate and the binary sequence.
 
 def encode(fn):
-    f = open(fn)
-    fn = f.read()
+
+    with open(fn, 'r') as f:
+        fn = f.read()
+
+    for old, new in replacements.items():
+        fn = fn.replace(old, new)
+
     binary_file = ""
-    while fn != "":
-        i = 4
-        while i > 0:
-            if str(fn[0:i]) in key:
-                binary_file += str(key[fn[0:i]])
-                fn = fn[i:]
-            else:
-                i = i - 1
+    ind = 0
+
+    while ind < len(fn):
+        found = False
+        for i in range(4, 0, -1):
+            if str(fn[ind: ind + i]) in key:
+                binary_file += str(key[fn[ind: ind + i]])
+                ind += i
+                found = True
+                break
+
+        if not found:
+            ind += 1
 
     newfile = str(len(binary_file)) + "." + binary_file
     # this creates the file sequence of D.B
@@ -54,49 +68,31 @@ def encode(fn):
 
 
 def decode(fn="BinOutput.txt"):
-    f = open(fn)
-    fn = f.read()
+
+    with open(fn, 'r') as f:
+        fn = f.read()
+
     # WHILE THE FILE ISNT DECODED // LOOP
     currentspot = 0 # where we're at in the oldfile
     newfile = '' # the newfile str
 
     # LOOP THROUGH ALL NUMBERS BELOW
-    while currentspot < len(fn): # while the cursor/spot is less than the length possible (of info)
-        if fn[currentspot] == '0': # SHORT NUM
-            char_in_binary = fn[currentspot:currentspot + ShortNum] # start at curr spot up to 5 to get bin num
-            row_index = XL[XL['Bin'] == char_in_binary].index # get the row
-
-            if not row_index.empty:  # make sure row isnt empty
-                row = row_index[0]  # get the index of row (where it is )
-                the_char = XL.loc[row, 'Char']
-                if the_char == '<space>':
-                    newfile+=' '
-                elif the_char == '<apostraphe>':
-                    newfile+="'"
-                elif the_char == "<newline>":
-                    newfile+="\n"
-                else:
-                    newfile += the_char # add char
-                currentspot += ShortNum  # Increase currspot for next loop
-                continue
-
-        elif fn[currentspot] == '1': # LONG NUM
+    while currentspot < len(fn):
+        if fn[currentspot] == '0':
+            char_in_binary = fn[currentspot:currentspot + ShortNum]
+            row_index = XL[XL['Bin'] == char_in_binary].index
+        elif fn[currentspot] == '1':
             char_in_binary = fn[currentspot:currentspot + LongNum]
             row_index = XL[XL['Bin'] == char_in_binary].index
-            # NO COMMENTS BECAUSE IT IS PRATICALLY THE SAME, BESIDE += longnum
-            if not row_index.empty:
-                row = row_index[0]
-                the_char = XL.loc[row, 'Char']
-                if the_char == '<space>':
-                    newfile += ' '
-                elif the_char == '<apostraphe>':
-                    newfile += "'"
-                elif the_char == "<newline>":
-                    newfile += "\n"
-                else:
-                    newfile += the_char
-                currentspot += LongNum
-                continue
+        else:
+            currentspot += 1
+            continue
+
+        if not row_index.empty:
+            row = row_index[0]
+            the_char = XL.loc[row, 'Char']
+            newfile += replacements.get(the_char, the_char)
+            currentspot += ShortNum if fn[currentspot] == '0' else LongNum
 
     TextOutput = open("TextOutput.txt")
     with open('TextOutput.txt', 'w') as fileopen:
@@ -142,6 +138,8 @@ def same(fn1, fn2 = "TextOutput.txt"):
         elif L2 > L1:
             errors.write(text2[m:])
         errors.close()
+
+
 
 
 
