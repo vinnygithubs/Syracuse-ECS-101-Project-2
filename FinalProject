@@ -9,12 +9,10 @@ Dec = list(XL['Dec'])
 for ind, char in enumerate(Char):
     if char == '<space>':
         Char[ind] = ' '
-    elif char == '<apostraphe>':
+    if char == '<apostraphe>':
         Char[ind] = "'"
-    elif char == "<newline>":
+    if char == "\\n":
         Char[ind] = "\n"
-    else:
-        continue
 
 key = dict(zip(Char, Bin))      # turns characters
     # zip function makes a dictionary  # into keys and
@@ -31,37 +29,17 @@ LongNum = 7
 # of bits required to translate and the binary sequence.
 
 def encode(fn):
-
-    binary_file = ""  # creating binary string
-    for ind, file_char in enumerate(fn):  # loop over file
-        # Handle special cases first
-        if file_char == '\n':
-            binary_file += str(key.get("<newline>", ""))  # Use .get() to avoid KeyError
-            continue
-
-        # Testing for words
-        if file_char == "t" or file_char == "T":
-            if fn[ind + 1:ind + 2] == "he":
-                binary_file += str(key["the" if file_char == 't' else "The"])
-                ind += 2
-                continue
-        elif file_char == "a" and fn[ind + 1:ind + 3] == "nd ":
-            binary_file += str(key["and "])
-            ind += 3
-            continue
-        elif file_char == "s":
-            if fn[ind + 1] == "o":
-                binary_file += str(key["so"])
-                ind += 1
-                continue
-            elif fn[ind + 1] == "t":
-                binary_file += str(key["st"])
-                ind += 1
-                continue
-
-        # Regular character mapping
-        binary_file += str(key[file_char])
-
+    f = open(fn)
+    fn = f.read()
+    binary_file = ""
+    while fn != "":
+        i = 4
+        while i > 0:
+            if str(fn[0:i]) in key:
+                binary_file += str(key[fn[0:i]])
+                fn = fn[i:]
+            else:
+                i = i - 1
 
     newfile = str(len(binary_file)) + "." + binary_file
     # this creates the file sequence of D.B
@@ -76,6 +54,8 @@ def encode(fn):
 
 
 def decode(fn="BinOutput.txt"):
+    f = open(fn)
+    fn = f.read()
     # WHILE THE FILE ISNT DECODED // LOOP
     currentspot = 0 # where we're at in the oldfile
     newfile = '' # the newfile str
@@ -162,6 +142,8 @@ def same(fn1, fn2 = "TextOutput.txt"):
         elif L2 > L1:
             errors.write(text2[m:])
         errors.close()
+
+
 
 
 
