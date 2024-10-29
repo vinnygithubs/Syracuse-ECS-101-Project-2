@@ -1,4 +1,6 @@
 # Global Variables
+# Read Excel
+# Jae Nicasio
 import pandas as pd
 XL = pd.read_excel('P2M012_G5.xlsx', dtype=str)
 # Columns
@@ -34,60 +36,81 @@ LongNum = 7
 
 def encode(fn):
 
+    # opens file
     with open(fn, 'r') as f:
         fn = f.read()
 
+    # makes sure replacements in excel file are there
     for old, new in replacements.items():
         fn = fn.replace(old, new)
 
+    # setting variables
     binary_file = ""
     ind = 0
 
+    # loop ends once the index reaches the end of the file
     while ind < len(fn):
         found = False
-        for i in range(4, 0, -1):
-            if str(fn[ind: ind + i]) in key:
+        for i in range(4, 0, -1): # 4 is our longest char
+            if str(fn[ind: ind + i]) in key: # searching
                 binary_file += str(key[fn[ind: ind + i]])
-                ind += i
-                found = True
-                break
+                # adds the corresponding binary
 
-        if not found:
+                ind += i # moves the ind to match the len
+                         # of the character
+                found = True
+                break # restarts the loop
+
+        if not found: # changes index normally
             ind += 1
 
     newfile = str(len(binary_file)) + "." + binary_file
     # this creates the file sequence of D.B
 
-    BinOutput = open("BinOutput.txt")
+    BinOutput = open("BinOutput.txt") # creates file
     with open('BinOutput.txt', 'w') as fileopen:
         fileopen.write(newfile)
-    print("Encoded:", newfile)
 
 
 # // ECS M012, Group 5 Decode File Function
-
+# Vincent Gallagher
+# Decode function will loop through the file provided
+# in binary and loop through every char by tracking
+# the current spot. Make sure row isnt empty, then
+# add the char to the string 'newfile' and add one
+# to the currspot variable. repeat this for long and
+# short numbers. continue until currspot < len of the
+# file provided.
 
 def decode(fn="BinOutput.txt"):
 
     with open(fn, 'r') as f:
         fn = f.read()
 
+    fn = fn.split(".")[1]
+
     # WHILE THE FILE ISNT DECODED // LOOP
     currentspot = 0 # where we're at in the oldfile
     newfile = '' # the newfile str
 
     # LOOP THROUGH ALL NUMBERS BELOW
-    while currentspot < len(fn):
-        if fn[currentspot] == '0':
+    while currentspot < len(fn): # while the cursor < len
+        if fn[currentspot] == '0': # SHORT NUM
             char_in_binary = fn[currentspot:currentspot + ShortNum]
+            # start at curr spot up to 5 to get bin num
             row_index = XL[XL['Bin'] == char_in_binary].index
-        elif fn[currentspot] == '1':
+            # get the row
+        elif fn[currentspot] == '1': # LONG NUM
             char_in_binary = fn[currentspot:currentspot + LongNum]
+            # start at curr spot up to 7 to get bin num
             row_index = XL[XL['Bin'] == char_in_binary].index
+            # get the row
+
         else:
             currentspot += 1
             continue
 
+        # deals with replaced values and makes sure they are good
         if not row_index.empty:
             row = row_index[0]
             the_char = XL.loc[row, 'Char']
@@ -95,9 +118,9 @@ def decode(fn="BinOutput.txt"):
             currentspot += ShortNum if fn[currentspot] == '0' else LongNum
 
     TextOutput = open("TextOutput.txt")
+    # creates file 
     with open('TextOutput.txt', 'w') as fileopen:
         fileopen.write(newfile)
-    print("Decoded:", newfile)
 
 # Ashley Gottorff
 # The same function compares the two text files and
@@ -138,6 +161,8 @@ def same(fn1, fn2 = "TextOutput.txt"):
         elif L2 > L1:
             errors.write(text2[m:])
         errors.close()
+
+
 
 
 
